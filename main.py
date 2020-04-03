@@ -2,36 +2,43 @@ from python_imagesearch.imagesearch import imagesearch, imagesearcharea, region_
 import pyautogui
 import time
 
-minx = 999999
-maxx = 0
+x1 = 999999
+x2 = 0
 
-miny = 999999
-maxy = 0
+y1 = 999999
+y2 = 0
 
 print("finding puzzle bounds")
 for i in range(1, 26):
-    print(f"Looking for {i}")
     pos = imagesearch(f"./imgs/{i}.png")
     if pos[0] != -1:
-        print("position : ", pos[0], pos[1])
-        minx = min(minx, pos[0])
-        maxx = max(maxx, pos[0])
+        x1 = min(x1, pos[0])
+        x2 = max(x2, pos[0])
 
-        miny = min(miny, pos[1])
-        maxy = max(maxy, pos[1])
+        y1 = min(y1, pos[1])
+        y2 = max(y2, pos[1])
+    else:
+        print(f"Failed to find {i}")
+        exit(0)
 
 
 print("playing")
-grabs = [1, 26, 30]
+grabs = [25, 29, 50]
 
+clicks = []
+im = region_grabber((x1, y1, x2 + 100, y2 + 100))
 for i in range(1, 51):
-    if i in grabs:
-        im = region_grabber((minx, miny, maxx + 100, maxy + 100))
-        
-    print(f"Looking for {i}")
-    pos = imagesearcharea(f"./imgs/{i}.png", minx, miny, maxx + 200, maxy + 200, im=im)
+    pos = imagesearcharea(f"./imgs/{i}.png", x1, y1, x2 + 200, y2 + 200, im=im)
     if pos[0] != -1:
-        print("position : ", pos[0], pos[1])
-        pyautogui.click(pos[0] + 10 + minx, pos[1] + 10 + miny)
+        #pyautogui.click(pos[0] + 10 + x1, pos[1] + 10 + y1)
+        clicks.append([pos[0] + 10 + x1, pos[1] + 10 + y1])
     else:
-        print("image not found")
+        print(f"Failed to find {i}")
+        exit
+
+    if i in grabs:
+        for c in clicks:
+            pyautogui.click(c[0], c[1])
+        clicks = []
+        im = region_grabber((x1, y1, x2 + 100, y2 + 100))
+
