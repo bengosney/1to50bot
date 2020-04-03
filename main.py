@@ -1,5 +1,6 @@
-from python_imagesearch.imagesearch import imagesearch, imagesearcharea
+from python_imagesearch.imagesearch import imagesearch, imagesearcharea, region_grabber
 import pyautogui
+import time
 
 minx = 999999
 maxx = 0
@@ -20,12 +21,15 @@ for i in range(1, 26):
         maxy = max(maxy, pos[1])
 
 
-
 print("playing")
+grabs = [1, 26, 30]
+
 for i in range(1, 51):
+    if i in grabs:
+        im = region_grabber((minx, miny, maxx + 100, maxy + 100))
+        
     print(f"Looking for {i}")
-    #pos = imagesearch(f"./imgs/{i}.png")
-    pos = imagesearcharea(f"./imgs/{i}.png", minx, miny, maxx + 100, maxy + 100)
+    pos = imagesearcharea(f"./imgs/{i}.png", minx, miny, maxx + 200, maxy + 200, im=im)
     if pos[0] != -1:
         print("position : ", pos[0], pos[1])
         pyautogui.click(pos[0] + 10 + minx, pos[1] + 10 + miny)
